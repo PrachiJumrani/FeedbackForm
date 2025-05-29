@@ -1,0 +1,71 @@
+import React, { useState } from 'react';
+
+export const ControlledForm = () => {
+  const [name, setName] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [errors, setErrors] = useState({});
+  const [successData, setSuccessData] = useState(null);
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!name.trim()) newErrors.name = 'Name is required.';
+    if (!feedback.trim()) {
+      newErrors.feedback = 'Feedback is required.';
+    } else if (feedback.trim().length < 20 || feedback.trim().length > 200) {
+      newErrors.feedback = 'Feedback must be between 20 and 200 characters.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (validate()) {
+      setSuccessData({ name, feedback });
+      setErrors({});
+    } else {
+      setSuccessData(null);
+    }
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name:</label>
+          <input
+            type='text'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
+        </div>
+
+        <div>
+          <label>Feedback:</label>
+          <textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            rows="5"
+          />
+          <p>Characters: {feedback.length}/200</p>
+          {errors.feedback && <p style={{ color: 'red' }}>{errors.feedback}</p>}
+        </div>
+
+        <button type='submit'>Submit</button>
+      </form>
+
+      {successData && (
+        <div>
+          <h3>Thank you for your feedback, {successData.name}!</h3>
+          <p>Your Feedback: {successData.feedback}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ControlledForm;
